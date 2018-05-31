@@ -1,16 +1,16 @@
-/* eslint no-use-before-define: ["error", { "variables": false }], padded-blocks: 0 */
-
+/*
+**  This component will be published in a separate package
+*/
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import Color from './Color';
+import  ChatAvatar  from './ChatAvatar.tsx';
 
-const { carrot, emerald, peterRiver, wisteria, alizarin, turquoise, midnightBlue } = Color;
 // TODO
 // 3 words name initials
 // handle only alpha numeric chars
 
-export default class GiftedAvatar extends React.PureComponent {
+export default class GiftedAvatar extends React.Component {
   setAvatarColor() {
     const userName = this.props.user.name || '';
     const name = userName.toUpperCase().split(' ');
@@ -23,40 +23,75 @@ export default class GiftedAvatar extends React.PureComponent {
     }
 
     let sumChars = 0;
-    for (let i = 0; i < userName.length; i += 1) {
+    for (let i = 0; i < userName.length; i++) {
       sumChars += userName.charCodeAt(i);
     }
 
     // inspired by https://github.com/wbinnssmith/react-user-avatar
     // colors from https://flatuicolors.com/
-    const colors = [carrot, emerald, peterRiver, wisteria, alizarin, turquoise, midnightBlue];
+    const colors = [
+      '#e67e22', // carrot
+      '#2ecc71', // emerald
+      '#3498db', // peter river
+      '#8e44ad', // wisteria
+      '#e74c3c', // alizarin
+      '#1abc9c', // turquoise
+      '#2c3e50' // midnight blue
+    ];
 
     this.avatarColor = colors[sumChars % colors.length];
   }
 
+  renderChatAvatar(userName, imageUrl, isStaff, avatarColor ){
+    console.log('userName, imageUrl, isStaff, avatarColor ');
+    console.log(userName, imageUrl, isStaff, avatarColor);
+    return (
+      <ChatAvatar
+      height={36}
+      width={36}
+      style={{
+        marginTop: 10,
+        marginBottom: 9,
+        marginLeft: 16,
+        marginRight: 20,
+        borderRadius: 18,
+        overflow: 'hidden',
+        backgroundColor: avatarColor
+      }}
+      textSize={11}
+      userName={userName}
+      src={imageUrl || 'https://ireview.live/img/no-user.png'}
+      isGroupChat={false}
+      isUserListItem={true}
+      isStaff={isStaff}
+    />
+    )
+  }
+
   renderAvatar() {
-    if (typeof this.props.user.avatar === 'function') {
-      return this.props.user.avatar();
-    } else if (typeof this.props.user.avatar === 'string') {
-      return (
-        <Image
-          source={{ uri: this.props.user.avatar }}
-          style={[styles.avatarStyle, this.props.avatarStyle]}
-        />
-      );
-    } else if (typeof this.props.user.avatar === 'number') {
-      return (
-        <Image
-          source={this.props.user.avatar}
-          style={[styles.avatarStyle, this.props.avatarStyle]}
-        />
-      );
-    }
-    return null;
+    // ------ GIFTED AVATAR --------  superTag
+    console.log('RENDER GIFTED AVATAR');
+    console.log('type' - typeof this.props.user.avatar);
+    console.log('AVATAR');
+    console.log(this.props.user.avatar);
+    console.log('USER');
+    console.log(this.props.user);
+
+    const user = this.props.user;
+    const userName = user.name;
+    const imageUrl = null;
+    const isStaff = user.isStaff;
+    const avatarColor = user.avatarColor;
+
+    return this.renderChatAvatar(userName, imageUrl, isStaff, avatarColor )
   }
 
   renderInitials() {
-    return <Text style={[styles.textStyle, this.props.textStyle]}>{this.avatarName}</Text>;
+    return (
+      <Text style={[defaultStyles.textStyle, this.props.textStyle]}>
+        {this.avatarName}
+      </Text>
+    );
   }
 
   render() {
@@ -64,7 +99,11 @@ export default class GiftedAvatar extends React.PureComponent {
       // render placeholder
       return (
         <View
-          style={[styles.avatarStyle, styles.avatarTransparent, this.props.avatarStyle]}
+          style={[
+            defaultStyles.avatarStyle,
+            { backgroundColor: 'transparent' },
+            this.props.avatarStyle
+          ]}
           accessibilityTraits="image"
         />
       );
@@ -72,12 +111,10 @@ export default class GiftedAvatar extends React.PureComponent {
     if (this.props.user.avatar) {
       return (
         <TouchableOpacity
-          disabled={!this.props.onPress}
+          disabled={this.props.onPress ? false : true}
           onPress={() => {
             const { onPress, ...other } = this.props;
-            if (this.props.onPress) {
-              this.props.onPress(other);
-            }
+            this.props.onPress && this.props.onPress(other);
           }}
           accessibilityTraits="image"
         >
@@ -86,18 +123,22 @@ export default class GiftedAvatar extends React.PureComponent {
       );
     }
 
-    this.setAvatarColor();
+    if (!this.avatarColor) {
+      this.setAvatarColor();
+    }
 
     return (
       <TouchableOpacity
-        disabled={!this.props.onPress}
+        disabled={this.props.onPress ? false : true}
         onPress={() => {
           const { onPress, ...other } = this.props;
-          if (this.props.onPress) {
-            this.props.onPress(other);
-          }
+          this.props.onPress && this.props.onPress(other);
         }}
-        style={[styles.avatarStyle, { backgroundColor: this.avatarColor }, this.props.avatarStyle]}
+        style={[
+          defaultStyles.avatarStyle,
+          { backgroundColor: this.avatarColor },
+          this.props.avatarStyle
+        ]}
         accessibilityTraits="image"
       >
         {this.renderInitials()}
@@ -106,38 +147,35 @@ export default class GiftedAvatar extends React.PureComponent {
   }
 }
 
-const styles = {
+const defaultStyles = {
   avatarStyle: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 40,
     height: 40,
-    borderRadius: 20,
-  },
-  avatarTransparent: {
-    backgroundColor: Color.backgroundTransparent,
+    borderRadius: 20
   },
   textStyle: {
-    color: Color.white,
+    color: '#fff',
     fontSize: 16,
-    backgroundColor: Color.backgroundTransparent,
-    fontWeight: '100',
-  },
+    backgroundColor: 'transparent',
+    fontWeight: '100'
+  }
 };
 
 GiftedAvatar.defaultProps = {
   user: {
     name: null,
-    avatar: null,
+    avatar: null
   },
   onPress: null,
   avatarStyle: {},
-  textStyle: {},
+  textStyle: {}
 };
 
 GiftedAvatar.propTypes = {
   user: PropTypes.object,
   onPress: PropTypes.func,
   avatarStyle: Image.propTypes.style,
-  textStyle: Text.propTypes.style,
+  textStyle: Text.propTypes.style
 };
