@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 export interface ChatAvatarProps {
   isUserListItem: boolean;
   isGroupChat: boolean;
+  isOnline: boolean;
   userName: boolean;
   textSize: number;
   isStaff: boolean;
@@ -28,12 +29,30 @@ const AvatarInitials = styled.Text`
   color: #fff;
 `;
 
+const OnlineCircle = styled.View`
+  padding: 2px;
+  border-radius: 7;
+  background-color: #ebebeb;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  zIndex: 50;
+`;
+
+const OnlineDot = styled.View`
+  width: 10;
+  height: 10;
+  border-radius: 5;
+  border-width: 2;
+`;
+
 const ChatAvatar: React.SFC<ChatAvatarProps> = props => {
   const renderAvatarImage = (src, isGroupChat, isUserListItem) => (
     <AvatarImage
       style={{
-        width: isUserListItem ? '100%' : '70%',
-        height: isUserListItem ? '100%' : '70%'
+        width: 50,
+        height: 50,
+        borderRadius: 25
       }}
       source={
         isGroupChat
@@ -61,6 +80,24 @@ const ChatAvatar: React.SFC<ChatAvatarProps> = props => {
     );
   };
 
+  const renderOnlineCircle = isOnline => {
+    const offlineStyle = {
+      borderColor: '#c9c9c9',
+      backgroundColor: '#ebebeb'
+    };
+
+    const onlineStyle = {
+      borderColor: '#68c700',
+      backgroundColor: '#68c700'
+    };
+    const styles = isOnline ? onlineStyle : offlineStyle;
+    return (
+      <OnlineCircle>
+        <OnlineDot style={styles} />
+      </OnlineCircle>
+    );
+  };
+
   return (
     <Container
       style={[
@@ -80,6 +117,7 @@ const ChatAvatar: React.SFC<ChatAvatarProps> = props => {
       {props.isStaff &&
         !props.isGroupChat &&
         renderInitials(props.userName, props.textSize)}
+      {renderOnlineCircle(props.isOnline)}
     </Container>
   );
 };

@@ -4,7 +4,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import  ChatAvatar  from './ChatAvatar.tsx';
+import ChatAvatar from './ChatAvatar.tsx';
 
 // TODO
 // 3 words name initials
@@ -42,48 +42,39 @@ export default class GiftedAvatar extends React.Component {
     this.avatarColor = colors[sumChars % colors.length];
   }
 
-  renderChatAvatar(userName, imageUrl, isStaff, avatarColor ){
-    console.log('userName, imageUrl, isStaff, avatarColor ');
-    console.log(userName, imageUrl, isStaff, avatarColor);
+  renderChatAvatar(userName, imageUrl, isStaff, avatarColor,isOnline) {
     return (
       <ChatAvatar
-      height={36}
-      width={36}
-      style={{
-        marginTop: 10,
-        marginBottom: 9,
-        marginLeft: 16,
-        marginRight: 20,
-        borderRadius: 18,
-        overflow: 'hidden',
-        backgroundColor: avatarColor
-      }}
-      textSize={11}
-      userName={userName}
-      src={imageUrl || 'https://ireview.live/img/no-user.png'}
-      isGroupChat={false}
-      isUserListItem={true}
-      isStaff={isStaff}
-    />
-    )
+        height={50}
+        width={50}
+        style={{
+          marginTop: 0,
+          marginBottom: 9,
+          marginLeft: 16,
+          marginRight: 20,
+          borderRadius: 25,
+          backgroundColor: avatarColor
+        }}
+        textSize={16}
+        isOnline={isOnline}
+        userName={userName}
+        src={imageUrl || 'https://ireview.live/img/no-user.png'}
+        isGroupChat={false}
+        isUserListItem={true}
+        isStaff={isStaff}
+      />
+    );
   }
 
   renderAvatar() {
-    // ------ GIFTED AVATAR --------  superTag
-    console.log('RENDER GIFTED AVATAR');
-    console.log('type' - typeof this.props.user.avatar);
-    console.log('AVATAR');
-    console.log(this.props.user.avatar);
-    console.log('USER');
-    console.log(this.props.user);
-
     const user = this.props.user;
     const userName = user.name;
     const imageUrl = null;
     const isStaff = user.isStaff;
     const avatarColor = user.avatarColor;
+    const isOnline = user.isOnline
 
-    return this.renderChatAvatar(userName, imageUrl, isStaff, avatarColor )
+    return this.renderChatAvatar(userName, imageUrl, isStaff, avatarColor, isOnline);
   }
 
   renderInitials() {
@@ -93,6 +84,17 @@ export default class GiftedAvatar extends React.Component {
       </Text>
     );
   }
+
+  renderOnlineCircle = isOnline => {
+    let styles = isOnline
+      ? { backgroundColor: '#68c700' }
+      : {
+          borderColor: '#c9c9c9',
+          borderWidth: 1.5
+        };
+    return(<View styles={[styles.onlineCircle, styles]} />)
+
+  };
 
   render() {
     if (!this.props.user.name && !this.props.user.avatar) {
@@ -119,6 +121,7 @@ export default class GiftedAvatar extends React.Component {
           accessibilityTraits="image"
         >
           {this.renderAvatar()}
+          {this.renderOnlineCircle(true)}
         </TouchableOpacity>
       );
     }
@@ -142,6 +145,8 @@ export default class GiftedAvatar extends React.Component {
         accessibilityTraits="image"
       >
         {this.renderInitials()}
+        {this.renderOnlineCircle(true)}
+        <Text>H</Text>
       </TouchableOpacity>
     );
   }
@@ -151,16 +156,26 @@ const defaultStyles = {
   avatarStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 20
+    width: 50,
+    height: 50,
+    borderRadius: 25
   },
   textStyle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 19,
     backgroundColor: 'transparent',
     fontWeight: '100'
+  },
+  onlineCircle:{  
+    position: 'absolute',
+    zIndex: 50,
+    right: 16,
+    bottom: 21,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   }
+
 };
 
 GiftedAvatar.defaultProps = {

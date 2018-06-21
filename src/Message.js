@@ -79,7 +79,7 @@ export default class Message extends React.PureComponent {
     if (currentMessage.user.avatar === null) {
       return null;
     }
-    return <Avatar {...avatarProps} />;
+    return <Avatar {...avatarProps} renderAvatarOnTop/>;
   }
 
   render() {

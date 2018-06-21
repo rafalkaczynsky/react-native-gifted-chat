@@ -2,10 +2,25 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ViewPropTypes } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewPropTypes
+} from 'react-native';
 import Color from './Color';
 
-export default function Send({ text, containerStyle, onSend, children, textStyle, label, alwaysShowSend }) {
+export default function Send({
+  text,
+  containerStyle,
+  onSend,
+  children,
+  textStyle,
+  label,
+  alwaysShowSend,
+  sendTextStyle
+}) {
   if (alwaysShowSend || text.trim().length > 0) {
     return (
       <TouchableOpacity
@@ -14,11 +29,17 @@ export default function Send({ text, containerStyle, onSend, children, textStyle
         accessibilityLabel="send"
         style={[styles.container, containerStyle]}
         onPress={() => {
-          onSend({ text: text.trim() }, true);
+          if (text.trim().length > 0) {
+            onSend({ text: text.trim() }, true);
+          } else {
+            alert('Your message is empty!')
+          }
         }}
         accessibilityTraits="button"
       >
-        <View>{children || <Text style={[styles.text, textStyle]}>{label}</Text>}</View>
+        <View>
+          {children || <Text style={[styles.text, textStyle, sendTextStyle]}>{label}</Text>}
+        </View>
       </TouchableOpacity>
     );
   }
@@ -28,7 +49,7 @@ export default function Send({ text, containerStyle, onSend, children, textStyle
 const styles = StyleSheet.create({
   container: {
     height: 44,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   text: {
     color: Color.defaultBlue,
@@ -37,8 +58,8 @@ const styles = StyleSheet.create({
     backgroundColor: Color.backgroundTransparent,
     marginBottom: 12,
     marginLeft: 10,
-    marginRight: 10,
-  },
+    marginRight: 10
+  }
 });
 
 Send.defaultProps = {
@@ -48,7 +69,7 @@ Send.defaultProps = {
   containerStyle: {},
   textStyle: {},
   children: null,
-  alwaysShowSend: false,
+  alwaysShowSend: false
 };
 
 Send.propTypes = {
@@ -58,5 +79,5 @@ Send.propTypes = {
   containerStyle: ViewPropTypes.style,
   textStyle: Text.propTypes.style,
   children: PropTypes.element,
-  alwaysShowSend: PropTypes.bool,
+  alwaysShowSend: PropTypes.bool
 };

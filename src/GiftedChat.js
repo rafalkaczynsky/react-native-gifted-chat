@@ -437,6 +437,7 @@ class GiftedChat extends React.Component {
       text: this.getTextFromProp(this.state.text),
       composerHeight: Math.max(MIN_COMPOSER_HEIGHT, this.state.composerHeight),
       onSend: this.onSend,
+      sendTextStyle: this.props.sendTextStyle,
       onInputSizeChanged: this.onInputSizeChanged,
       onTextChanged: this.onInputTextChanged,
       textInputProps: {
@@ -450,6 +451,7 @@ class GiftedChat extends React.Component {
     }
     return (
       <InputToolbar
+       
         {...inputToolbarProps}
       />
     );
